@@ -1,0 +1,187 @@
+# Rime schema
+# encoding: utf-8
+#
+
+# Su-ji̍p-hoat hong-àn tēng-gī
+schema:
+  schema_id: khitaigi_laimh_poj_hanlo_gisu
+  name: KhiTaigi Lài-mh 台語輸入法（POJ漢羅版）
+  version: "0.1.0"
+  description: KhiTaigi Lài-mh Tâi-gí Su-ji̍p-hoat
+  author:
+    - Tâi-bûn Ke-si Mī <taibunkesimi@gmail.com>
+
+switches:
+  - name: ascii_mode
+    states: ["台文", "英文"]
+    # Chiàu-goân 0 sī Tâi-bûn, 1 sī Eng-bûn.
+    reset: 0
+  - name: full_shape
+    states: ["半形羅馬字", "全形羅馬字"]
+    # Chiàu-goân 0 sī pòaⁿ hêng jī, 1 sī choân hêng jī.
+    reset: 0
+  #  - extended_charset
+  # Chiàu-goân 0 sī CJK ki-pún pán, 1 sī CJK oân-chéng pán.
+  #    reset: 1
+  - name: ascii_punct
+    states: ["全形符號", "半形符號"]
+    # Chiàu-goân 0 sī hû-hō choân gêng, 1 sī pòaⁿ hêng.
+    reset: 0
+  - name: zh_tw
+    reset: 1
+
+# Rime iăn-jín châi-liāu
+engine:
+  # Chhú-lí input
+  processors:
+    # Chhiat-ōaⁿ La-teng jī-bó bô͘-sek (ti̍t-chiap output) kap bûn-jī bô͘-sek.
+    - ascii_composer
+    # Kap "segmentors/matcher" chò-hóe iōng, chhú-lí te̍k-sû ê "tags".
+    - recognizer
+    # Siat tiâu-kiāⁿ lâi pa̍k key.
+    - key_binder
+    # Chhú-lí pheng-im
+    - speller
+    # Chhú-lí phiau-tiám
+    - punctuator
+    # Chhú-lí hāu-soán sû
+    - selector
+    # Sóa input ê ūi-tì
+    - navigator
+    # Kán-tan pán ê phian-chhip khì. Chhú-lí space, delete. Enter ē sàng khì êng-bō͘.
+    # - express_editor
+    # Kù sek pán ê phian-chhip khì. Lia̍h space tn̄g sû. Enter ē sàng khì êng-bō͘. Mā ē-sái siá chò "fluid_editor".
+    - fluency_editor
+
+  # Phiau-kì tó ūi ài thiah
+  segmentors:
+    # Phiau-kì La-teng jī-bó, thang ti̍t-chiap output.
+    - ascii_segmentor
+    # Kap "processors/recognizer" chò-hóe iōng, chhú-lí te̍k-sû ê "tags".
+    - matcher
+    # Phiau-kì ABC
+    - abc_segmentor
+    # Phiau-kì phiau-tiám.
+    - punct_segmentor
+    # Kā input liâm chò 1 pha
+    - fallback_segmentor
+
+  # Chiong input ōaⁿ chò hāu-soán sû.
+  translators:
+    # Kap "segmentors/punct_segmentor" chò-hóe iōng. Ǒaⁿ phiau-tiám.
+    - punct_translator
+    # Ōaⁿ ka-tī tēng-gī ê gí-kù.
+    - table_translator@custom_phrase
+    # Ōaⁿ jī bé chò bûn-jī, tùi-èng table. Iōng tī 倉頡, 五筆 chit lūi--ê.
+    - table_translator
+    # Ōaⁿ pheng-im chò bûn-jī. Iōng tī 拼音, 粵拼 chit lūi--ê.
+    - script_translator
+
+  filters:
+    # Hāu-soán sû nā tiông-ho̍k, ka kéng tiāu.
+    - uniquifier
+
+# Hāu-soán sû mĕ-niú
+menu:
+  # Soán sû ê key (Ài kéng Pe̍h-ōe-jī jī-bó, siaⁿ-tiāu bô teh iōng--ê.)
+  alternative_select_keys: "qwydf6zxv0"
+  # 1 ia̍h kúi ê sû
+  page_size: 10
+
+# Chhú-lí pheng-im kui-chek
+speller:
+  # Bûn-jī hû-hō
+  alphabet: "abceghijklmnoprstuABCEGHIJKLMNOPRSTU12345789"
+  # Khí-thâu--ê
+  initials: "abceghijklmnoprstuABCEGHIJKLMNOPRSTU"
+  # Bóe-liu--ê
+  finals: "12345789"
+  # Tn̄g sû hû-hō
+  # delimiter: ""
+  # Kám beh iōng space key
+  use_space: false
+  # Chū-tōng sàng hāu-soán sû khì êng-bō͘
+  auto_select: false
+  # Siat-tēng te̍k-pia̍t ê kui-chek
+  algebra:
+    ####################
+    # Input ka kán-tan hòa
+    ####################
+    # Siaⁿ-tiāu sò͘-jī bián phah.
+    - derive/^([abceghijklmnoprstuABCEGHIJKLMNOPRSTU]+)[1-9]$/$1/
+    # Siaⁿ-tiāu sò͘-jī 1 kap 4 bián phah.
+    - abbrev/^([abceghijklmnoprstuABCEGHIJKLMNOPRSTU]).+[14]$/$1/
+    # Kan-na phah ta̍k ê im-chat thâu 1 ê La-teng jī-bó. Lē: "chhài-se" phah "cs". (Kāng khoán--ê khah chē.)
+    # - abbrev/^([abceghijklmnoprstuABCEGHIJKLMNOPRSTU]).+$/$1/
+    # Kan-na phah ta̍k ê im-chat thâu 1 ê Tâi-gí jī-bó. Lē: "chhài-se" phah "chhs".
+    - abbrev/^((a|b|chh|ch|e|g|h|i|j|k|l|m|ng|n|o|p|r|s|t|u|A|B|Chh|CHH|Ch|CH|E|G|H|I|J|K|L|M|Ng|NG|N|O|P|R|S|T|U)).+$/$1/
+    ####################
+    # Ún-chún Pe̍h-ōe-jī "o͘" kō͘ "ou" lâi phah. (Chiàu-goân sī "oo".)
+    ####################
+    # Kā "oo" phah chò "ou".
+    - derive/oo([abceghijklmnoprstuABCEGHIJKLMNOPRSTU]*)([1-9])$/ou$1$2/
+    # Kā "Oo" phah chò "Ou".
+    - derive/^Oo([abceghijklmnoprstuABCEGHIJKLMNOPRSTU]*)([1-9])$/Ou$1$2/
+    # Kā "OO" phah chò "OU".
+    - derive/^OO([abceghijklmnoprstuABCEGHIJKLMNOPRSTU]*)([1-9])$/OU$1$2/
+
+# Hoan-e̍k 1 cho͘ hû-hō, piàn chò hāu-soán sû. 1 cho͘ seⁿ chò siáⁿ khoán ē-sái ka-tī tēng-gī "tags".
+translator:
+  # "table_translator" teh iōng ê sû-tián tòng-àn miâ: xxx.dict.yaml
+  dictionary: khitaigi_laimh_poj_hanlo_gisu
+  # Siat-tēng ki-pún sû pîn
+  initial_quality: 0
+  # Kám ē chū-tōng cho͘ sû? "table_translator" iōng--ê.
+  enable_encoder: true
+  # Chū-tōng cho͘ sû ê sî kám ū kòa í-keng sàng khì êng-bō͘ ê sû?
+  encode_commit_history: true
+  # Cho͘ sû ê sî siōng tn̂g kúi ê im-chat?
+  # max_phrase_length: 10
+  # Kám ē chū-tōng cho͘ kù?
+  enable_sentence: true
+  # Kám ē-tàng iōng sú-iōng-chiá sû-tián?
+  enable_user_dict: true
+
+# Ka-tī tēng-gī gí-kù
+custom_phrase:
+  dictionary: ""
+  # Ka-tī tēng-gī ê sû-tián tòng-àn miâ: xxx.custom_phrase
+  user_dict: khitaigi_laimh_poj_hanlo_gisu.custom_phrase
+  # Chu-liāu khò͘ ê keh-sek. "tabledb" sī iōng text. "userdb" sī iōng binary.
+  db_class: tabledb
+  # Iáu bē phah oân-chéng--ê, mā ún-chún chū-tōng hián-sī hāu-soán sû. "table_translator" iōng--ê.
+  enable_completion: false
+  # Kám ē-tàng chō kù.
+  enable_sentence: false
+  initial_quality: 0
+
+# Phiau-tiám hû-hō
+punctuator:
+  # Ka-tī tēng-gī phiau-tiám hû-hō pió: xxx.symbol
+  import_preset: khitaigi_laimh_poj_hanlo_gisu.symbol
+
+# Pa̍k key
+key_binder:
+  # Iōng default--ê.
+  import_preset: default
+  # Ka-tī tēng-gī hitkey.
+  bindings:
+    # Hāu-soán sû mĕ-niú āu 1 ia̍h: Page Down
+    - when: composing
+      accept: Tab
+      send: Page_Down
+
+    # Hāu-soán sû mĕ-niú chêng 1 ia̍h: Page Up
+    - when: composing
+      accept: Shift+Tab
+      send: Page_Up
+
+    # Hāu-soán sû mĕ-niú āu 1 ia̍h: [
+    - when: composing
+      accept: bracketright
+      send: Page_Down
+
+    # Hāu-soán sû mĕ-niú chêng 1 ia̍h: ]
+    - when: composing
+      accept: bracketleft
+      send: Page_Up
